@@ -1,33 +1,18 @@
-const xhr = new XMLHttpRequest();
-const pollTitle = document.getElementById('poll__title');
-const pollAnswer = document.getElementById('poll__answers');
+const loaderImg = document.getElementById("loader");
+const items = document.getElementById("items");
 
-xhr.open('GET', 'https://students.netoservices.ru/nestjs-backend/poll', true);
-xhr.responseType = 'json';
-
-xhr.addEventListener('load', e => {
-  let title = xhr.response.data.title;
-  let answers = xhr.response.data.answers;
-
-  pollTitle.textContent = title;
-      
-    for (let i = 0; i< answers.length;i++){
-      pollAnswer.insertAdjacentHTML(
-        "afterBegin",
-        `<button class="poll__answer">
-        ${answers[i]}
-        </button>`
-      )
-    }
-
-    const pollAnswers = Array.from(document.querySelectorAll(".poll__answer"));    
-    
-    pollAnswers.forEach(el => {
-      el.addEventListener('click', () => {
-        alert('Спасибо, ваш голос засчитан!');
-      })
-    })
-    e.preventDefault();
-});
-
+let xhr = new XMLHttpRequest();
+xhr.open('GET', 'https://students.netoservices.ru/nestjs-backend/slow-get-courses');
 xhr.send();
+
+xhr.onreadystatechange = function () {
+  if(xhr.readyState === 4) {
+    let output = '';
+    let data = JSON.parse(xhr.responseText).response.Valute;
+    for (let key in data) {
+      output += "<div class=\"item\"> <div class=\"item__code\">" + data[key].CharCode + "</div>" + "<div class=\"item__value\">" + data[key].Value + "</div>" + "<div class=\"item__currency\"> руб. </div> </div>"
+    }
+    loaderImg.classList.remove("loader_active");
+    items.innerHTML = output;
+  }
+};
